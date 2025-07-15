@@ -1,6 +1,7 @@
 import { Injectable, OnModuleInit, Logger, InternalServerErrorException, BadRequestException, NotFoundException, ConflictException } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Role, TaskPriority, TaskStatus } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { users, tasks } from './json/seed';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
@@ -8,11 +9,49 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
   async onModuleInit() {
     await this.$connect();
-    this.logger.debug('PrismaService connected!!!');  
+    this.logger.debug('PrismaService connected!!!');
+    await this.seed();
   }
 
   async onModuleDestroy() {
     await this.$disconnect();
+  }
+
+  private async seed() {
+    const cleanTables = [
+      this.user.deleteMany(),
+      this.task.deleteMany(),
+    ];
+
+    const createUserPromises = users.map((user) => (
+      this.user.create({
+        data: {
+          id: user.id,
+          username: user.username,
+          password: user.password,
+          role: user.role as Role,
+          isDeleted: user.isDeleted,
+        },
+      })
+    ));
+
+    const tasksToAddPromises = tasks.map((task) => (
+      this.task.create({
+        data: {
+          id: task.id,
+          title: task.title,
+          description: task.description,
+          status: task.status as TaskStatus,
+          priority: task.priority as TaskPriority,
+          createdById: task.createdById,
+          assignedToId: task.assignedToId,
+        },
+      })
+    ));
+
+    await Promise.all(cleanTables);
+    await Promise.all(createUserPromises);
+    await Promise.all(tasksToAddPromises);
   }
 
   public handlePrismaExceptions(error: any): never {

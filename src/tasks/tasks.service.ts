@@ -78,9 +78,9 @@ export class TasksService {
     }
   }
 
-  async restore(id: string): Promise<Task | undefined> {
+  async restore(id: string): Promise<boolean> {
     try {
-      return await this.prismaService.task.update({
+      const task = await this.prismaService.task.update({
         where: {
           id,
         },
@@ -88,6 +88,8 @@ export class TasksService {
           isDeleted: false,
         },
       });
+
+      return !!task;
     } catch (error) {
       this.logger.error(JSON.stringify(error));
       this.prismaService.handlePrismaExceptions(error);
@@ -97,7 +99,7 @@ export class TasksService {
   async remove(id: string): Promise<boolean> {
     try {
       const deleted = await this.prismaService.$executeRawUnsafe(
-        `UPDATE task SET isDeleted = false WHERE isDeleted = true AND id = '${id}';`,
+        `UPDATE task SET isDeleted = true WHERE isDeleted = false AND id = '${id}';`,
       );
 
       return deleted > 0;

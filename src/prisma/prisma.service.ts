@@ -18,11 +18,6 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   }
 
   private async seed() {
-    const cleanTables = [
-      this.user.deleteMany(),
-      this.task.deleteMany(),
-    ];
-
     const createUserPromises = users.map((user) => (
       this.user.create({
         data: {
@@ -49,7 +44,8 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
       })
     ));
 
-    await Promise.all(cleanTables);
+    await this.task.deleteMany(),
+    await this.user.deleteMany(),
     await Promise.all(createUserPromises);
     await Promise.all(tasksToAddPromises);
   }

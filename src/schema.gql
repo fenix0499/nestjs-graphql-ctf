@@ -82,7 +82,7 @@ type Mutation {
   removeTask(id: String!): RemoveTask!
 
   """Require rol ADMIN or MODERATOR"""
-  restoreTask(id: String!): Task!
+  restoreTask(id: String!): RemoveTask!
   login(loginInput: LoginInput!): Auth!
   register(signupInput: SignupInput!): Auth!
   updateUser(updateUserInput: UpdateUserInput!): User!

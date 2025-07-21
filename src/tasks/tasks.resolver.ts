@@ -102,7 +102,7 @@ export class TasksResolver {
 
   @Roles(Role.ADMIN, Role.MODERATOR)
   @Mutation(
-    () => Task,
+    () => RemoveTask,
     {
       name: 'restoreTask',
       description: 'Require rol ADMIN or MODERATOR',
@@ -110,7 +110,10 @@ export class TasksResolver {
   )
   async restoreTask(
     @Args('id', new ParseUUIDPipe()) id: string,
-  ): Promise<TaskEntity | undefined> {
-    return await this.tasksService.restore(id);
+  ): Promise<RemoveTask> {
+    const result = await this.tasksService.restore(id);
+    return {
+      success: result,
+    }
   }
 }

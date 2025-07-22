@@ -11,6 +11,6 @@ export class  LoginInput {
   @Field(() => String)
   @IsString()
   @MinLength(6)
-  @MaxLength(20)
+  @MaxLength(30)
   password: string;
 }

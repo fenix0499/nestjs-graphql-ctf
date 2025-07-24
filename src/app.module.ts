@@ -9,15 +9,18 @@ import { GraphQLError } from 'graphql';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { AdminModule } from './admin/admin.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CronModule } from './cron/cron.module';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       debug: false,
       playground: false,
       // csrfPrevention: false,
-      introspection: true,
+      introspection: false,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       formatError: ({ extensions, ...rest }: GraphQLError) => {
         return {
@@ -39,6 +42,7 @@ import { AdminModule } from './admin/admin.module';
     AuthModule,
     UserModule,
     AdminModule,
+    CronModule,
   ],
   controllers: [],
   providers: [],

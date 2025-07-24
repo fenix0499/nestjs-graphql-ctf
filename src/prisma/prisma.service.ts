@@ -11,13 +11,14 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     await this.$connect();
     this.logger.debug('PrismaService connected!!!');
     await this.seed();
+    this.logger.debug('Seed executed successfully!');
   }
 
   async onModuleDestroy() {
     await this.$disconnect();
   }
 
-  private async seed() {
+  async seed() {
     const createUserPromises = users.map((user) => (
       this.user.create({
         data: {
